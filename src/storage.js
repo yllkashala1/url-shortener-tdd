@@ -1,19 +1,21 @@
 // src/storage.js
-// Week 1: STUB implementation. Tests are expected to fail.
+
+const store = new Map();
 
 function saveUrl(shortCode, originalUrl) {
-  // TODO: implement in Week 2 (GREEN phase)
-  throw new Error("Not implemented");
+  store.set(shortCode, originalUrl);
 }
 
 function getUrl(shortCode) {
-  // TODO: implement in Week 2
-  throw new Error("Not implemented");
+  return store.get(shortCode);
 }
 
 function exists(shortCode) {
-  // TODO: implement in Week 2
-  throw new Error("Not implemented");
+  return store.has(shortCode);
 }
 
-module.exports = { saveUrl, getUrl, exists };
+function reset() {
+  store.clear();
+}
+
+module.exports = { saveUrl, getUrl, exists, reset };
