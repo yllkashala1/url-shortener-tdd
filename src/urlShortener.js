@@ -1,9 +1,5 @@
-// src/urlShortener.js
-// Week 2: implementation pa dependency te jashtme
-
 const storage = require("./storage");
 
-// helper i thjeshte per me gjeneru short code 6-shkronjor
 function generateShortCode(length = 6) {
   const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let code = "";

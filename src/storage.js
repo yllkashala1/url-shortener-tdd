@@ -1,5 +1,3 @@
-// src/storage.js
-
 const store = new Map();
 
 function saveUrl(shortCode, originalUrl) {

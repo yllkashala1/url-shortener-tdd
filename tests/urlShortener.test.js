@@ -1,5 +1,3 @@
-// tests/urlShortener.test.js
-
 const { createShortUrl, resolveShortUrl } = require("../src/urlShortener");
 
 describe("URL Shortener Core Logic (planned behavior)", () => {
