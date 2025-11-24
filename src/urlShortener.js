@@ -10,9 +10,18 @@ function generateShortCode(length = 6) {
   return code;
 }
 
+function isValidUrlFormat(url) {
+  const pattern = /^https?:\/\/[^\s]+$/;
+  return pattern.test(url);
+}
+
 function createShortUrl(originalUrl) {
   if (!originalUrl || typeof originalUrl !== "string" || originalUrl.trim() === "") {
     throw new Error("Invalid URL");
+  }
+
+  if (!isValidUrlFormat(originalUrl)) {
+    throw new Error("Invalid URL format");
   }
 
   const shortCode = generateShortCode(6);
@@ -29,4 +38,4 @@ function resolveShortUrl(shortCode) {
   return storage.getUrl(shortCode);
 }
 
-module.exports = { createShortUrl, resolveShortUrl };
+module.exports = { createShortUrl, resolveShortUrl, isValidUrlFormat };
