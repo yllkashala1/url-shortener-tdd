@@ -10,22 +10,34 @@ function generateShortCode(length = 6) {
   return code;
 }
 
+function normalizeUrl(url) {
+  if (typeof url !== "string") return url;
+  return url.trim();
+}
+
 function isValidUrlFormat(url) {
   const pattern = /^https?:\/\/[^\s]+$/;
   return pattern.test(url);
 }
 
 function createShortUrl(originalUrl) {
-  if (!originalUrl || typeof originalUrl !== "string" || originalUrl.trim() === "") {
+  const normalizedUrl = normalizeUrl(originalUrl);
+
+  if (!normalizedUrl || typeof normalizedUrl !== "string" || normalizedUrl === "") {
     throw new Error("Invalid URL");
   }
 
-  if (!isValidUrlFormat(originalUrl)) {
+  if (!isValidUrlFormat(normalizedUrl)) {
     throw new Error("Invalid URL format");
   }
 
+  const existingCode = storage.findShortCodeByUrl(normalizedUrl);
+  if (existingCode) {
+    return existingCode;
+  }
+
   const shortCode = generateShortCode(6);
-  storage.saveUrl(shortCode, originalUrl);
+  storage.saveUrl(shortCode, normalizedUrl);
 
   return shortCode;
 }
@@ -38,4 +50,4 @@ function resolveShortUrl(shortCode) {
   return storage.getUrl(shortCode);
 }
 
-module.exports = { createShortUrl, resolveShortUrl, isValidUrlFormat };
+module.exports = { createShortUrl, resolveShortUrl, isValidUrlFormat, normalizeUrl };
