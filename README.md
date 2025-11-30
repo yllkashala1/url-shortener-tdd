@@ -1,86 +1,163 @@
-# URL Shortener Service (TDD Project)
+URL Shortener Service – Test Driven Development (TDD)
 
-This repository contains a small **URL Shortener** service developed using **Test-Driven Development (TDD)** as part of a weekly, iteration-based course project.
+A lightweight but fully functional URL Shortener service built using Test-Driven Development, implemented incrementally over five weeks following an iterative RED → GREEN → REFACTOR workflow.
 
-The main goal is *not only* to build a working URL shortener, but to **practice TDD, incremental design, refactoring, and CI** in a realistic but simple codebase.
+The objective of the project is not only to implement a URL shortening mechanism, but to demonstrate practical application of TDD, incremental development, clean refactoring, test coverage, and Continuous Integration (CI) in a modular Node.js codebase.
 
----
+1. Project Overview
 
-## 1. Project Overview
+The application provides two core capabilities:
 
-The application converts long URLs into short codes and later resolves those codes back to their original URLs.
+Converts a long URL into a short, unique code.
 
-Key characteristics:
+Resolves a short code back to the original URL.
 
-- Implementation is intentionally simple and **in-memory** (no database).
-- Focus on:
-  - **TDD (Red → Green → Refactor)**
-  - **Clean, modular design**
-  - **Small, incremental weekly iterations**
-  - **Good test coverage and CI integration**
+The service is intentionally simple and storage is maintained in-memory using JavaScript Map() objects to keep the focus on:
 
----
+pure TDD practices
 
-## 2. Features
+modular and maintainable design
 
-### ✅ Feature 1 – Core URL Shortening (Week 2)
+incremental feature delivery
 
-- Generate a random short code (length = 6).
-- Store mapping `shortCode -> originalUrl` in memory.
-- Resolve short code back to original URL.
-- Error if short code does not exist.
-- Error if URL input is empty.
+structured test suite
 
-### ✅ Feature 2 – Advanced URL Validation (Week 3)
+CI automation via GitHub Actions
 
-Before shortening a URL, the system validates that:
+2. Features (Week-by-Week)
+⚡ Feature 1 – Basic URL Shortening (Week 2)
 
-- The URL starts with `http://` or `https://`
-- The URL contains **no spaces**
-- Unsupported protocols such as `ftp://` are rejected
+Generates a 6-character alphanumeric short code.
 
-Invalid URLs throw a clear error:
+Stores mapping:
+shortCode → originalUrl
 
-- `Invalid URL` – for empty or missing input
-- `Invalid URL format` – for wrong format (no protocol, spaces, unsupported protocol)
+Resolves short code back to the original URL.
 
-### ✅ Feature 3 – Deduplication & URL Normalization (Week 4)
+Throws errors for:
 
-To improve design and behavior:
+unknown short codes (Short code not found)
 
-- **Deduplication**:
-  - If the same URL is shortened multiple times, the **same short code** is returned.
-  - Prevents duplicate entries in storage.
-- **URL Normalization**:
-  - Leading and trailing spaces are trimmed (`"   https://example.com   "` → `"https://example.com"`).
-  - URLs with spaces around them behave exactly like clean URLs.
-- These behaviors are fully covered by new tests.
+empty or invalid base input (Invalid URL)
 
----
+⚡ Feature 2 – Advanced URL Validation (Week 3)
 
-## 3. Technology Stack
+Before generating a short code, the system validates that the URL:
 
-- **Node.js** – runtime environment
-- **JavaScript (CommonJS)** – implementation language
-- **Jest** – unit testing framework
-- **Git & GitHub** – version control and repository hosting
-- **GitHub Actions** – Continuous Integration (CI)
-- **In-memory `Map()`** – storage for `shortCode -> originalUrl`
+starts with http:// or https://
 
----
+contains no internal spaces
 
-## 4. Project Structure
+does not use unsupported protocols (e.g., ftp://)
 
-```text
+Error messages include:
+
+Invalid URL → empty/undefined input
+
+Invalid URL format → incorrect syntax, missing protocol, spaces, or unsupported protocol
+
+⚡ Feature 3 – Deduplication & URL Normalization (Week 4)
+
+To optimize system behavior:
+
+Deduplication
+
+If a URL has already been shortened once, the service returns the same short code on future requests.
+
+Prevents duplicate entries and unnecessary randomness.
+
+Normalization
+
+Leading/trailing spaces are removed using .trim().
+
+" https://example.com " behaves identically to "https://example.com".
+
+Both behaviors are verified by an expanded test suite introduced in Week 4.
+
+3. Technology Stack
+
+Node.js – runtime environment
+
+JavaScript (CommonJS) – implementation language
+
+Jest – unit testing
+
+Git & GitHub – version control
+
+GitHub Actions – Continuous Integration pipeline
+
+In-memory Maps – data storage
+
+4. Project Structure
 src/
-  index.js             # Entry point (placeholder for future HTTP API)
-  storage.js           # In-memory storage module (Map-based)
-  urlShortener.js      # Core URL shortener logic (create + resolve + validation + deduplication)
+  index.js             # Entry point (prepared for future API integration)
+  storage.js           # In-memory storage (shortCode -> URL, URL -> shortCode)
+  urlShortener.js      # Core logic: shortening, resolving, validation, deduplication
 
 tests/
-  urlShortener.test.js # Jest test suite for all core features
+  urlShortener.test.js # Jest test suite covering all system behaviors
 
 .gitignore
 package.json
 package-lock.json
 README.md
+
+5. Development Process (TDD)
+
+The entire project follows an iterative RED → GREEN → REFACTOR cycle:
+
+RED – write failing tests describing expected behavior.
+
+GREEN – implement minimal functionality required to pass tests.
+
+REFACTOR – clean and reorganize logic while preserving test results.
+
+This approach ensures:
+
+clear requirement definition
+
+safe and confident refactoring
+
+maintainable and modular code
+
+stable behavior across iterations
+
+6. Continuous Integration
+
+A GitHub Actions workflow automatically runs:
+
+npm install
+
+npm test
+
+test coverage reporting
+
+on every push, guaranteeing that:
+
+the codebase remains stable at all times
+
+no commit breaks existing tests
+
+TDD workflow is preserved end-to-end
+
+7. Test Coverage
+
+Test coverage exceeds 80% across:
+
+statements
+
+branches
+
+functions
+
+lines
+
+This high coverage ensures stability during refactoring and prevents regressions in core functionality.
+
+8. Status
+
+✔ All features (Week 2–4) fully implemented
+✔ Refactoring and optimization completed
+✔ All tests passing locally and in CI
+✔ Coverage above requirements
+✔ Final report and presentation completed
