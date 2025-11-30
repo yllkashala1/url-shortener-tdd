@@ -1,48 +1,56 @@
 const storage = require("./storage");
 
+const ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
 function generateShortCode(length = 6) {
-  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let code = "";
   for (let i = 0; i < length; i++) {
-    const index = Math.floor(Math.random() * chars.length);
-    code += chars[index];
+    const index = Math.floor(Math.random() * ALPHABET.length);
+    code += ALPHABET[index];
   }
   return code;
 }
 
-function normalizeUrl(url) {
-  if (typeof url !== "string") return url;
+function normaliseUrl(url) {
   return url.trim();
 }
 
 function isValidUrlFormat(url) {
+  const normalised = normaliseUrl(url);
   const pattern = /^https?:\/\/[^\s]+$/;
-  return pattern.test(url);
+  return pattern.test(normalised);
 }
 
 function createShortUrl(originalUrl) {
-  const normalizedUrl = normalizeUrl(originalUrl);
-
-  if (!normalizedUrl || typeof normalizedUrl !== "string" || normalizedUrl === "") {
+  if (!originalUrl || typeof originalUrl !== "string" || originalUrl.trim() === "") {
     throw new Error("Invalid URL");
   }
 
-  if (!isValidUrlFormat(normalizedUrl)) {
+  const normalisedUrl = normaliseUrl(originalUrl);
+
+  if (!isValidUrlFormat(normalisedUrl)) {
     throw new Error("Invalid URL format");
   }
 
-  const existingCode = storage.findShortCodeByUrl(normalizedUrl);
+  const existingCode = storage.findShortCodeByUrl(normalisedUrl);
   if (existingCode) {
     return existingCode;
   }
 
-  const shortCode = generateShortCode(6);
-  storage.saveUrl(shortCode, normalizedUrl);
+  let shortCode;
+  do {
+    shortCode = generateShortCode(6);
+  } while (storage.exists(shortCode));
 
+  storage.saveUrl(shortCode, normalisedUrl);
   return shortCode;
 }
 
 function resolveShortUrl(shortCode) {
+  if (!shortCode || typeof shortCode !== "string" || shortCode.trim() === "") {
+    throw new Error("Invalid short code");
+  }
+
   if (!storage.exists(shortCode)) {
     throw new Error("Short code not found");
   }
@@ -50,4 +58,9 @@ function resolveShortUrl(shortCode) {
   return storage.getUrl(shortCode);
 }
 
-module.exports = { createShortUrl, resolveShortUrl, isValidUrlFormat, normalizeUrl };
+module.exports = {
+  createShortUrl,
+  resolveShortUrl,
+  isValidUrlFormat,
+  generateShortCode,
+};

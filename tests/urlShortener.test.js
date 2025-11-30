@@ -1,29 +1,47 @@
-const { createShortUrl, resolveShortUrl } = require("../src/urlShortener");
+const {
+  createShortUrl,
+  resolveShortUrl,
+  isValidUrlFormat,
+} = require("../src/urlShortener");
 const storage = require("../src/storage");
 
-describe("URL Shortener Core Logic (planned behavior)", () => {
-  beforeEach(() => {
-    if (storage.reset) storage.reset();
-  });
+beforeEach(() => {
+  storage.reset();
+});
 
+describe("URL Shortener – core functionality", () => {
   test("createShortUrl should return a short code of length 6", () => {
     const code = createShortUrl("https://example.com");
-    expect(code.length).toBe(6);
+    expect(code).toHaveLength(6);
   });
 
-  test("createShortUrl should allow resolving the original URL", () => {
-    const url = "https://example.com";
-    const code = createShortUrl(url);
+  test("createShortUrl and resolveShortUrl should map URL correctly", () => {
+    const originalUrl = "https://example.com";
+    const code = createShortUrl(originalUrl);
     const resolved = resolveShortUrl(code);
-    expect(resolved).toBe(url);
+    expect(resolved).toBe(originalUrl);
   });
 
-  test("resolveShortUrl should throw for unknown code", () => {
+  test("resolveShortUrl should throw for unknown short code", () => {
     expect(() => resolveShortUrl("xxxxxx")).toThrow("Short code not found");
   });
 
-  test("createShortUrl should throw for invalid URLs (empty string)", () => {
+  test("createShortUrl should throw for empty URL", () => {
     expect(() => createShortUrl("")).toThrow("Invalid URL");
+    expect(() => createShortUrl("   ")).toThrow("Invalid URL");
+  });
+
+  test("resolveShortUrl should throw for invalid (empty) short code", () => {
+    expect(() => resolveShortUrl("")).toThrow("Invalid short code");
+    expect(() => resolveShortUrl("   ")).toThrow("Invalid short code");
+  });
+});
+
+describe("URL Shortener – URL validation", () => {
+  test("isValidUrlFormat should accept valid http/https URLs", () => {
+    expect(isValidUrlFormat("http://example.com")).toBe(true);
+    expect(isValidUrlFormat("https://example.com")).toBe(true);
+    expect(isValidUrlFormat("https://example.com/path?query=1")).toBe(true);
   });
 
   test("createShortUrl should reject URLs without http/https", () => {
@@ -31,17 +49,15 @@ describe("URL Shortener Core Logic (planned behavior)", () => {
   });
 
   test("createShortUrl should reject URLs with spaces", () => {
-    expect(() => createShortUrl("https://exa mple.com")).toThrow(
-      "Invalid URL format"
-    );
+    expect(() => createShortUrl("https://exa mple.com")).toThrow("Invalid URL format");
   });
 
   test("createShortUrl should reject URLs with unsupported protocol (ftp)", () => {
-    expect(() => createShortUrl("ftp://example.com")).toThrow(
-      "Invalid URL format"
-    );
+    expect(() => createShortUrl("ftp://example.com")).toThrow("Invalid URL format");
   });
+});
 
+describe("URL Shortener – deduplication & normalization", () => {
   test("same URL should return the same short code (deduplication)", () => {
     const url = "https://example.com";
     const code1 = createShortUrl(url);
@@ -49,30 +65,17 @@ describe("URL Shortener Core Logic (planned behavior)", () => {
     expect(code1).toBe(code2);
   });
 
-  test("URL with surrounding spaces should be normalized and behave the same", () => {
+  test("same URL with extra spaces should still return the same short code", () => {
+    const urlClean = "https://example.com";
     const urlWithSpaces = "   https://example.com   ";
-    const cleanUrl = "https://example.com";
-
-    const code1 = createShortUrl(urlWithSpaces);
-    const code2 = createShortUrl(cleanUrl);
-
+    const code1 = createShortUrl(urlClean);
+    const code2 = createShortUrl(urlWithSpaces);
     expect(code1).toBe(code2);
-
-    const resolved = resolveShortUrl(code1);
-    expect(resolved).toBe(cleanUrl);
   });
 
-  test("different URLs should still be resolvable independently", () => {
-    const url1 = "https://example.com/one";
-    const url2 = "https://example.com/two";
-
-    const code1 = createShortUrl(url1);
-    const code2 = createShortUrl(url2);
-
-    const resolved1 = resolveShortUrl(code1);
-    const resolved2 = resolveShortUrl(code2);
-
-    expect(resolved1).toBe(url1);
-    expect(resolved2).toBe(url2);
+  test("different URLs should return different short codes", () => {
+    const code1 = createShortUrl("https://example.com/one");
+    const code2 = createShortUrl("https://example.com/two");
+    expect(code1).not.toBe(code2);
   });
 });

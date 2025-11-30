@@ -1,28 +1,33 @@
-const store = new Map();
+let shortToUrl = new Map();
+
+let urlToShort = new Map();
 
 function saveUrl(shortCode, originalUrl) {
-  store.set(shortCode, originalUrl);
+  shortToUrl.set(shortCode, originalUrl);
+  urlToShort.set(originalUrl, shortCode);
 }
 
 function getUrl(shortCode) {
-  return store.get(shortCode);
+  return shortToUrl.get(shortCode);
 }
 
 function exists(shortCode) {
-  return store.has(shortCode);
+  return shortToUrl.has(shortCode);
 }
 
 function findShortCodeByUrl(originalUrl) {
-  for (const [code, url] of store.entries()) {
-    if (url === originalUrl) {
-      return code;
-    }
-  }
-  return null;
+  return urlToShort.get(originalUrl) || null;
 }
 
 function reset() {
-  store.clear();
+  shortToUrl.clear();
+  urlToShort.clear();
 }
 
-module.exports = { saveUrl, getUrl, exists, reset, findShortCodeByUrl };
+module.exports = {
+  saveUrl,
+  getUrl,
+  exists,
+  findShortCodeByUrl,
+  reset,
+};
