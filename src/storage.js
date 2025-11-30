@@ -1,5 +1,4 @@
 let shortToUrl = new Map();
-
 let urlToShort = new Map();
 
 function saveUrl(shortCode, originalUrl) {

@@ -15,7 +15,7 @@ describe("URL Shortener – core functionality", () => {
     expect(code).toHaveLength(6);
   });
 
-  test("createShortUrl and resolveShortUrl should map URL correctly", () => {
+  test("createShortUrl and resolveShortUrl should correctly map URL", () => {
     const originalUrl = "https://example.com";
     const code = createShortUrl(originalUrl);
     const resolved = resolveShortUrl(code);
@@ -26,12 +26,12 @@ describe("URL Shortener – core functionality", () => {
     expect(() => resolveShortUrl("xxxxxx")).toThrow("Short code not found");
   });
 
-  test("createShortUrl should throw for empty URL", () => {
+  test("createShortUrl should throw for empty or whitespace-only URL", () => {
     expect(() => createShortUrl("")).toThrow("Invalid URL");
     expect(() => createShortUrl("   ")).toThrow("Invalid URL");
   });
 
-  test("resolveShortUrl should throw for invalid (empty) short code", () => {
+  test("resolveShortUrl should throw for empty short code", () => {
     expect(() => resolveShortUrl("")).toThrow("Invalid short code");
     expect(() => resolveShortUrl("   ")).toThrow("Invalid short code");
   });
@@ -48,7 +48,7 @@ describe("URL Shortener – URL validation", () => {
     expect(() => createShortUrl("example.com")).toThrow("Invalid URL format");
   });
 
-  test("createShortUrl should reject URLs with spaces", () => {
+  test("createShortUrl should reject URLs with spaces inside", () => {
     expect(() => createShortUrl("https://exa mple.com")).toThrow("Invalid URL format");
   });
 
@@ -65,7 +65,7 @@ describe("URL Shortener – deduplication & normalization", () => {
     expect(code1).toBe(code2);
   });
 
-  test("same URL with extra spaces should still return the same short code", () => {
+  test("same URL with leading/trailing spaces should return the same short code", () => {
     const urlClean = "https://example.com";
     const urlWithSpaces = "   https://example.com   ";
     const code1 = createShortUrl(urlClean);
